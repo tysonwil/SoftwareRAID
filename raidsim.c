@@ -1,7 +1,95 @@
+///////////////////////////////////////////////////////////////////////////////
+// PROGRAM 3 - RAID
+// Title: 
+// Files: 
+// Semester: CS537 Spring 2013
+//
+// PAIR PROGRAMMERS
+//
+// Pair Partner: (Ted) Tianchu Huang thuang33@wisc.edu
+// CS Login: Tianchu
+// Lecturer's Name: Michael Swift
+//
+// Pair Partner: Tyson Williams tjwilliams4@wisc.edu
+// CS Login: twilliam
+// Lecturer's Name: Michael Swift
+//
+// Pair Partner: Adam Thorson adthorson@wisc.edu
+// CS Login: thorson
+// Lecturer's Name: Michael Swift
+//
+//////////////////////////// 80 columns wide //////////////////////////////////
 
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+/*
+ * Uses a switch to decide between different RAID systems
+ *
+ *@param choice :must be a single int passed in
+ *
+ */
+void chooseSystem(int choice){
+	
+	switch(choice){
+		case 0: doRaid0(); break;
+		case 5: doRaid5(); break;
+		case 4: doRaid4(); break;
+		default: doRaid10(); break; //case 10
+	}
+
+}
+
+/*
+ * do RAID 0
+ *
+ *@param 
+ *
+ */
+void doRaid0(){
+	
+
+
+}
+/*
+ * do RAID 5
+ *
+ *@param
+ *
+ */
+void doRaid5(){
+
+
+
+
+}
+/*
+ * do RAID 4
+ *
+ *@param
+ *
+ */
+void doRaid4(){
+
+
+
+
+}
+
+/*
+ * do RAID 10
+ *
+ *@param
+ *
+ */
+void doRaid10(){
+
+
+
+}
+
+
 
 int main(int argc, char * argv[]){
 
@@ -76,4 +164,52 @@ int main(int argc, char * argv[]){
 		exit(-1);
 	}
 
+	
+	chooseSystem(level);
+	
+	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
