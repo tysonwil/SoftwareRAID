@@ -1,4 +1,3 @@
-
 +///////////////////////////////////////////////////////////////////////////////
 +// PROGRAM 3 - RAID
 +// Title:
@@ -25,6 +24,17 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+
+char* error_msg = "Error\n";
+int counter     = 0;
+int level       = -1;
+int strip       = -1;
+int disks       = -1;
+int size        = -1;
+char* trace     = NULL;
+int verbose     = 0;
+int exit_flag   = 0;
 
 /*
  * Uses a switch to decide between different RAID systems
@@ -95,16 +105,7 @@ void doRaid10() {
 
 int main(int argc, char * argv[]) {
     
-    char* error_msg = "Error\n";
-	char* opt_list  = "level:strip:disks:size:trace:verbose";
-	int counter     = 0;
-	int level       = -1;
-	int strip       = -1;
-	int disks       = -1;
-	int size        = -1;
-	char* trace     = NULL;
-	int verbose     = 0;
-	int exit_flag   = 0;
+
     
 	//has appropiate amount of arguments?
 	if ((argc != 11) || (argc != 13)) {
@@ -127,7 +128,7 @@ int main(int argc, char * argv[]) {
 			size = atoi(argv[2*counter+2]);
             
 		} else if(strcmp("-trace", argv[2*counter+1]) == 0) {
-			trace = argv[2*counter+å2];
+			trace = argv[2*counter+2];
             
 		} else if(strcmp("-verbose", argv[2*counter+1]) == 0) {
 			verbose = argv[2*counter+2];
@@ -162,7 +163,7 @@ int main(int argc, char * argv[]) {
 		//debugging
 		printf("%s\n","Unable to Create Virtual Disks");
         
-		write(STDERR_FILENO, error_msg, strlen(error_msg));		
+		write(STDERR_FILENO, error_msg, strlen(error_msg));
 		exit(-1);
 	}
     
