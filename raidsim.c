@@ -68,16 +68,32 @@ void chooseSystem(int choice) {
  *
  */
 void doRaid0() {
+    int counter;
+    
     while(fgets(str, 100, trace_file) != NULL){//for each line
         //parse and detect what command we have
         //for this purpose, "line" is the string on the line from the trace file
         char *command = NULL;
-		command = (char*) malloc(512); 
+		command = (char*) malloc(512);
 		if(str[strlen(str) - 1] == '\n')
 			str[strlen(str) - 1] = '\0'; //remove newline char
+        
         command = strtok(str," "); //split string on space delimiter into tokens
-        char* commandLine[4];
-
+        counter = 0;
+        while(command != NULL){
+            ++counter;
+            command = strtok(NULL," ");
+        }
+        
+        if(counter > 4){
+            write(STDERR_FILENO, error_msg, strlen(error_msg));
+			exit(-1);
+        }
+        
+        char* commandLine[counter];
+        
+        command = strtok(str," "); //split string on space delimiter into tokens
+        
 		int i = 0;
 		while( command != NULL ) {
             if (*command != '\0') {
@@ -87,24 +103,25 @@ void doRaid0() {
 			i++
             command = strtok( NULL, " " );
         }
+        
         if(strcmp("READ", commandLine[0]) == 0){
 			
 		}
 		else if(strcmp("WRITE", commandLine[0]) == 0){
-		
+            
 		}
 		else if(strcmp("FAIL", commandLine[0]) == 0){
-		
+            
 		}
 		else if(strcmp("RECOVER", commandLine[0]) == 0){
-		
+            
 		}
         else if(strcmp("END", commandLine[0]) == 0){ // END
             break;
         }
 		else{
 			write(STDERR_FILENO, error_msg, strlen(error_msg));
-			exit(1);
+			exit(-1);
 		}
         free(command);
     }
@@ -152,7 +169,7 @@ void doRaid10() {
 
 int main(int argc, char * argv[]) {
     
-
+    
     
 	//has appropiate amount of arguments?
 	if ((argc != 11) || (argc != 13)) {
