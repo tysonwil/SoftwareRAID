@@ -16,14 +16,18 @@
 //
 // Pair Partner: Adam Thorson adthorson@wisc.edu
 // CS Login: thorson
-// Lecturer's Name: Michael Swift+//
+// Lecturer's Name: Michael Swift
+//
 //////////////////////////// 80 columns wide //////////////////////////////////
 
 
-#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
+
+#include "disk.h"
+#include "disk-array.h"
 
 
 int value = 0;
@@ -39,26 +43,13 @@ int disks       = -1;
 int size        = -1;
 char* trace     = NULL;
 int verbose     = 0;
+int flag       = 0;
 int exit_flag   = 0;
 char str[100];
+disk_array_t my_disk_array = NULL;
 FILE * trace_file = NULL;
 
-/*
- * Uses a switch to decide between different RAID systems
- *
- *@param choice :must be a single int passed in
- *
- */
-void chooseSystem(int choice) {
-    
-	switch (choice) {
-		case 0: doRaid0(); break;
-		case 5: doRaid5(); break;
-		case 4: doRaid4(); break;
-		default: doRaid10(); break; //case 10
-	}
-    
-}
+
 
 /*
  * do RAID 0
@@ -99,7 +90,7 @@ void doRaid0() {
 				commandLine[i] = malloc(7*sizeof(char));
                 commandLine[i] = command;
             }
-			i++
+			i++;
             command = strtok( NULL, " " );
         }
         
@@ -166,6 +157,29 @@ void doRaid10() {
     
 }
 
+
+
+/*
+ * Uses a switch to decide between different RAID systems
+ *
+ *@param choice :must be a single int passed in
+ *
+ */
+void chooseSystem(int choice) {
+    
+	switch (choice) {
+		case 0: doRaid0(); break;
+		case 5: doRaid5(); break;
+		case 4: doRaid4(); break;
+		default: doRaid10(); break; //case 10
+	}
+    
+}
+
+
+
+
+
 int main(int argc, char * argv[]) {
     
     
@@ -194,7 +208,7 @@ int main(int argc, char * argv[]) {
 			trace = argv[2*counter+2];
             
 		} else if(strcmp("-verbose", argv[2*counter+1]) == 0) {
-			verbose = argv[2*counter+2];
+			verbose = atoi(argv[2*counter+2]);
 		}
 	}
     
@@ -230,7 +244,7 @@ int main(int argc, char * argv[]) {
     
     
 	//create disk array
-	disk_array_t my_disk_array = disk_array_create("MyVirtualDiskArray", disks, size);
+	my_disk_array = disk_array_create("MyVirtualDiskArray", disks, size);
 	if (!my_disk_array) {
 		//debugging
 		printf("%s\n","Unable to Create Virtual Disks");
