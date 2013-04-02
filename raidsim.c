@@ -76,6 +76,9 @@ void doRaid0() {
         }
         
         if(counter > 4){
+            //debugging
+            printf("%s\n","Command word counter error");
+            
             write(STDERR_FILENO, error_msg, strlen(error_msg));
 			exit(-1);
         }
@@ -95,21 +98,30 @@ void doRaid0() {
         }
         
         if(strcmp("READ", commandLine[0]) == 0){
-			
+			//debugging
+            printf("READ:\t%s\n",commandLine[0]);
 		}
 		else if(strcmp("WRITE", commandLine[0]) == 0){
-            
+			//debugging
+            printf("WRITE:\t%s\n",commandLine[0]);
 		}
 		else if(strcmp("FAIL", commandLine[0]) == 0){
-            
+			//debugging
+            printf("FAIL:\t%s\n",commandLine[0]);
 		}
 		else if(strcmp("RECOVER", commandLine[0]) == 0){
-            
+			//debugging
+            printf("RECOVER:\t%s\n",commandLine[0]);
 		}
         else if(strcmp("END", commandLine[0]) == 0){ // END
+			//debugging
+            printf("END:\t%s\n",commandLine[0]);
             break;
         }
 		else{
+            //debugging
+            printf("%s\n","Command error");
+            
 			write(STDERR_FILENO, error_msg, strlen(error_msg));
 			exit(-1);
 		}
@@ -185,7 +197,10 @@ int main(int argc, char * argv[]) {
     
     
 	//has appropiate amount of arguments?
-	if ((argc != 11) || (argc != 13)) {
+	if ((argc != 11) && (argc != 13)) {
+        //debugging
+		printf("%s\n","Arg Error");
+        
 		write(STDERR_FILENO, error_msg, strlen(error_msg));
 		exit(-1);
 	}
@@ -214,7 +229,7 @@ int main(int argc, char * argv[]) {
     
 	//CHECK ARGUMENT VALUES
 	//valid level of RAID?
-	if ((level != 0) || (level != 10) || (level != 4) || (level != 5)) {
+	if ((level != 0) && (level != 10) && (level != 4) && (level != 5)) {
 		flag = 1;
 		//debugging
 		printf("%s\n","Invalid or Not Provided Level");
@@ -229,6 +244,9 @@ int main(int argc, char * argv[]) {
     
 	//exit if flag was raised
 	if (flag == 1) {
+        //debugging
+		printf("%s\n","Flag error");
+        
 		write(STDERR_FILENO, error_msg, strlen(error_msg));
 		exit(-1);
 	}
