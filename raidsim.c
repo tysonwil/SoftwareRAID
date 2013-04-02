@@ -27,6 +27,11 @@
 #include <unistd.h>
 
 
+int value = 0;
+int lba = 0;
+int commandSize = 0;
+int commandDisk = 0;
+
 char* error_msg = "Error\n";
 int counter     = 0;
 int level       = -1;
