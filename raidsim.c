@@ -1,24 +1,23 @@
-+///////////////////////////////////////////////////////////////////////////////
-+// PROGRAM 3 - RAID
-+// Title:
-+// Files:
-+// Semester: CS537 Spring 2013
-+//
-+// PAIR PROGRAMMERS
-+//
-+// Pair Partner: (Ted) Tianchu Huang thuang33@wisc.edu
-+// CS Login: Tianchu
-+// Lecturer's Name: Michael Swift
-+//
-+// Pair Partner: Tyson Williams tjwilliams4@wisc.edu
-+// CS Login: twilliam
-+// Lecturer's Name: Michael Swift
-+//
-+// Pair Partner: Adam Thorson adthorson@wisc.edu
-+// CS Login: thorson
-+// Lecturer's Name: Michael Swift
-+//
-+//////////////////////////// 80 columns wide //////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// PROGRAM 3 - RAID
+// Title:
+// Files:
+// Semester: CS537 Spring 2013
+//
+// PAIR PROGRAMMERS
+//
+// Pair Partner: (Ted) Tianchu Huang thuang33@wisc.edu
+// CS Login: Tianchu
+// Lecturer's Name: Michael Swift
+//
+// Pair Partner: Tyson Williams tjwilliams4@wisc.edu
+// CS Login: twilliam
+// Lecturer's Name: Michael Swift
+//
+// Pair Partner: Adam Thorson adthorson@wisc.edu
+// CS Login: thorson
+// Lecturer's Name: Michael Swift+//
+//////////////////////////// 80 columns wide //////////////////////////////////
 
 
 #include <string.h>
