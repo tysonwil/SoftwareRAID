@@ -98,9 +98,13 @@ void doRaid0() {
             command++; //DISK
             commandDisk = atoi(command);
         }
-        else{ // END
-            exit(1);
+        else if(strcmp("END", command) == 0){ // END
+            break;
         }
+		else{
+			write(STDERR_FILENO, error_msg, strlen(error_msg));
+			exit(1);
+		}
         
     }
     
