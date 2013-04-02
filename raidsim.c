@@ -27,11 +27,6 @@
 #include <unistd.h>
 
 
-int value = 0;
-int lba = 0;
-int commandSize = 0;
-int commandDisk = 0;
-
 char* error_msg = "Error\n";
 int counter     = 0;
 int level       = -1;
@@ -41,6 +36,7 @@ int size        = -1;
 char* trace     = NULL;
 int verbose     = 0;
 int exit_flag   = 0;
+char str[100];
 FILE * trace_file = NULL;
 
 /*
@@ -67,42 +63,41 @@ void chooseSystem(int choice) {
  *
  */
 void doRaid0() {
-        while(){//for each line
-		//parse and detect what command we have
-		//for this purpose, "line" is the string on the line from the trace file
-		char str[] = line;
-		char *command = NULL;
-		command = strtok(str," "); //split string on space delimiter into tokens
-		
-		
-		if(strcmp("READ", command) == 0){ //READ LBA SIZE
-			command++; //LBA
-			lba = atoi(command);
-			command++; //size
-			commandSize = atoi(command);
-		}
-		else if(strcmp("WRITE", command) == 0){ //WRITE LBA SIZE VALUE
-			command++; //LBA
-			lba = atoi(command);
-			command++; //size
-			commandSize = atoi(command);
-			command++; //VALUE
-			value = atoi(command);
-		}
-		else if(strcmp("FAIL", command) == 0){ //FAIL DISK
-			command++; //DISK
-			commandDisk = atoi(command);
-		
-		}
-		else if(strcmp("RECOVER", command) == 0){ //RECOVER DISK
-			command++; //DISK
-			commandDisk = atoi(command);
-		}
-		else{ // END
-			exit(1);
-		}
-		
-	}
+    while(fgets(str, 100, trace_file) != NULL){//for each line
+        //parse and detect what command we have
+        //for this purpose, "line" is the string on the line from the trace file
+        char *command = NULL;
+        command = strtok(str," "); //split string on space delimiter into tokens
+        
+        
+        if(strcmp("READ", command) == 0){ //READ LBA SIZE
+            command++; //LBA
+            lba = atoi(command);
+            command++; //size
+            commandSize = atoi(command);
+        }
+        else if(strcmp("WRITE", command) == 0){ //WRITE LBA SIZE VALUE
+            command++; //LBA
+            lba = atoi(command);
+            command++; //size
+            commandSize = atoi(command);
+            command++; //VALUE
+            value = atoi(command);
+        }
+        else if(strcmp("FAIL", command) == 0){ //FAIL DISK
+            command++; //DISK
+            commandDisk = atoi(command);
+            
+        }
+        else if(strcmp("RECOVER", command) == 0){ //RECOVER DISK
+            command++; //DISK
+            commandDisk = atoi(command);
+        }
+        else{ // END
+            exit(1);
+        }
+        
+    }
     
     
 }
@@ -219,4 +214,8 @@ int main(int argc, char * argv[]) {
 	}
     
     chooseSystem(level);
+    
+    fclose(trace_file);
+    
+    return 0;
 }
