@@ -48,7 +48,7 @@ int exit_flag   = 0;
 char str[100];
 disk_array_t my_disk_array = NULL;
 FILE * trace_file = NULL;
-
+int * working_disks = NULL;
 
 
 /*
@@ -295,6 +295,11 @@ int main(int argc, char * argv[]) {
 		write(STDERR_FILENO, error_msg, strlen(error_msg));
 		exit(-1);
 	}
+	//start all disks at working
+	int i = 0;
+	working_disks = malloc(disks * sizeof(int));
+	for(i = 0; i < disks; ++i)
+		working_disks[i] = TRUE;
     
     chooseSystem(level);
     
