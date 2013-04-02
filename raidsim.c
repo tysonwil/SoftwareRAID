@@ -87,7 +87,7 @@ void doRaid0() {
 			i++
             command = strtok( NULL, " " );
         }
-        else if(strcmp("READ", commandLine[0]) == 0){
+        if(strcmp("READ", commandLine[0]) == 0){
 			
 		}
 		else if(strcmp("WRITE", commandLine[0]) == 0){
