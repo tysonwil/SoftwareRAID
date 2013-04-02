@@ -95,8 +95,28 @@ void doRaid0() {
         }
         
         if(strcmp("READ", commandLine[0]) == 0){ //READ LBA SIZE
-			char *data = malloc();
-			disk_array_read( my_disk_array, commandLine[2], commandLine[1], char *data );
+			int *data;
+			data = malloc(512);
+			int numberOfReads = commandLine[2]
+			int currentLBA = commandLine[1];
+			int j;
+			int blockNumber; //starting LBA
+			int diskNumber;
+			int stripLayer;
+			int blockOfStrip;
+			int temp;
+			
+			for(j = 0; j < numberOfReads /*size*/; j++){ // number of blocks we have to write to
+				temp = currentLBA/strip;
+				stripLayer = temp/disks;a
+				blockOfStrip = temp%strip;
+				blockNumber = stripLayer*strip + blockOfStrip;
+				diskNumber = temp%disks; //algorithm to calculate the disk we write to
+				disk_array_read( my_disk_array, diskNumber, blockNumber, data );
+				
+				printf("%d ",data);
+			}
+			printf("\n");
 		}
 		
 		else if(strcmp("WRITE", commandLine[0]) == 0){ //WRITE LBA SIZE VALUE
@@ -110,7 +130,7 @@ void doRaid0() {
 			int blockOfStrip;
 			int temp;
 			
-			for(j = 0; j < commandLine[1] /*size*/; j++){ // number of blocks we have to write to
+			for(j = 0; j < numberOfWrites /*size*/; j++){ // number of blocks we have to write to
 				temp = currentLBA/strip;
 				stripLayer = temp/disks;a
 				blockOfStrip = temp%strip;
