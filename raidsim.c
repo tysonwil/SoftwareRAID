@@ -101,17 +101,22 @@ void doRaid0() {
 		
 		else if(strcmp("WRITE", commandLine[0]) == 0){ //WRITE LBA SIZE VALUE
 			char *data = commandLine[3];
+			int numberOfWrites = commandLine[2]
+			int currentLBA = commandLine[1];
 			int j;
-			int blockNumber = commandLine[1]; //starting LBA
+			int blockNumber; //starting LBA
 			int diskNumber;
+			int stripLayer;
+			int blockOfStrip;
+			int temp;
 			
 			for(j = 0; j < commandLine[1] /*size*/; j++){ // number of blocks we have to write to
-			
-				diskNumber = commandLine[1]/(strip*disks)%strip; //algorithm to calculate the disk we write to
+				temp = currentLBA/strip;
+				stripLayer = temp/disks;a
+				blockOfStrip = temp%strip;
+				blockNumber = stripLayer*strip + blockOfStrip;
+				diskNumber = temp%disks; //algorithm to calculate the disk we write to
 				disk_array_write( my_disk_array, diskNumber, blockNumber, data );
-				
-				blockNumber++;
-				
 			}
 		}
 		
