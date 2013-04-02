@@ -76,9 +76,6 @@ void doRaid0() {
         }
         
         if(counter > 4){
-            //debugging
-            printf("%s\n","Command word counter error");
-            
             write(STDERR_FILENO, error_msg, strlen(error_msg));
 			exit(-1);
         }
@@ -97,38 +94,40 @@ void doRaid0() {
             command = strtok( NULL, " " );
         }
         
-        if(strcmp("READ", commandLine[0]) == 0){
-			//debugging
-            printf("READ:\t%s\n",commandLine[0]);
+        if(strcmp("READ", commandLine[0]) == 0){ //READ LBA SIZE
+			char *data = malloc();
+			disk_array_read( my_disk_array, commandLine[2], commandLine[1], char *data );
 		}
-		else if(strcmp("WRITE", commandLine[0]) == 0){
-						char *data = commandLine[3];
+		
+		else if(strcmp("WRITE", commandLine[0]) == 0){ //WRITE LBA SIZE VALUE
+			char *data = commandLine[3];
 			int j;
-			int diskNumber = (commandLine[1]/strip)%disk;
-			int blockNumber = ;
-			for(j = 0; j < commandLine[1] /*size*/; j++){
-				disk_array_write( my_disk_array, diskNumber, /*block*/, data );
-				diskNumber++;
+			int blockNumber = commandLine[1]; //starting LBA
+			int diskNumber;
+			
+			for(j = 0; j < commandLine[1] /*size*/; j++){ // number of blocks we have to write to
+			
+				diskNumber = commandLine[1]/(strip*disks)%strip; //algorithm to calculate the disk we write to
+				disk_array_write( my_disk_array, diskNumber, blockNumber++, data );
+				
+				blockNumber++;
+				
 			}
-            printf("WRITE:\t%s\n",commandLine[0]);
 		}
-		else if(strcmp("FAIL", commandLine[0]) == 0){
-			//debugging
-            printf("FAIL:\t%s\n",commandLine[0]);
+		
+		else if(strcmp("FAIL", commandLine[0]) == 0){ //FAIL DISK
+            
 		}
-		else if(strcmp("RECOVER", commandLine[0]) == 0){
-			//debugging
-            printf("RECOVER:\t%s\n",commandLine[0]);
+		
+		else if(strcmp("RECOVER", commandLine[0]) == 0){ //RECOVER DISK
+            
 		}
+		
         else if(strcmp("END", commandLine[0]) == 0){ // END
-			//debugging
-            printf("END:\t%s\n",commandLine[0]);
             break;
         }
+		
 		else{
-            //debugging
-            printf("%s\n","Command error");
-            
 			write(STDERR_FILENO, error_msg, strlen(error_msg));
 			exit(-1);
 		}
@@ -204,10 +203,7 @@ int main(int argc, char * argv[]) {
     
     
 	//has appropiate amount of arguments?
-	if ((argc != 11) && (argc != 13)) {
-        //debugging
-		printf("%s\n","Arg Error");
-        
+	if ((argc != 11) || (argc != 13)) {
 		write(STDERR_FILENO, error_msg, strlen(error_msg));
 		exit(-1);
 	}
@@ -236,7 +232,7 @@ int main(int argc, char * argv[]) {
     
 	//CHECK ARGUMENT VALUES
 	//valid level of RAID?
-	if ((level != 0) && (level != 10) && (level != 4) && (level != 5)) {
+	if ((level != 0) || (level != 10) || (level != 4) || (level != 5)) {
 		flag = 1;
 		//debugging
 		printf("%s\n","Invalid or Not Provided Level");
@@ -251,9 +247,6 @@ int main(int argc, char * argv[]) {
     
 	//exit if flag was raised
 	if (flag == 1) {
-        //debugging
-		printf("%s\n","Flag error");
-        
 		write(STDERR_FILENO, error_msg, strlen(error_msg));
 		exit(-1);
 	}
