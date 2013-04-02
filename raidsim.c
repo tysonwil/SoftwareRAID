@@ -108,7 +108,7 @@ void doRaid0() {
 			for(j = 0; j < commandLine[1] /*size*/; j++){ // number of blocks we have to write to
 			
 				diskNumber = commandLine[1]/(strip*disks)%strip; //algorithm to calculate the disk we write to
-				disk_array_write( my_disk_array, diskNumber, blockNumber++, data );
+				disk_array_write( my_disk_array, diskNumber, blockNumber, data );
 				
 				blockNumber++;
 				
