@@ -23,6 +23,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <unistd.h>
 
 
@@ -35,6 +36,7 @@ int size        = -1;
 char* trace     = NULL;
 int verbose     = 0;
 int exit_flag   = 0;
+FILE * trace_file = NULL;
 
 /*
  * Uses a switch to decide between different RAID systems
@@ -155,6 +157,15 @@ int main(int argc, char * argv[]) {
 		write(STDERR_FILENO, error_msg, strlen(error_msg));
 		exit(-1);
 	}
+    
+    //open file
+    if( (trace_file = fopen(trace, "r")) == NULL){
+        //debugging
+		printf("%s\n","Unable to Open Trace File");
+        
+		write(STDERR_FILENO, error_msg, strlen(error_msg));
+		exit(-1);
+    }
     
     
 	//create disk array
