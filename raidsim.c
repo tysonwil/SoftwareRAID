@@ -97,10 +97,10 @@ void doRaid0() {
         }
         
         if(strcmp("READ", commandLine[0]) == 0){ //READ LBA SIZE
-			int *data;
+			char *data;
 			data = malloc(512);
-			int numberOfReads = commandLine[2]
-			int currentLBA = commandLine[1];
+			int numberOfReads = atoi(commandLine[2]);
+			int currentLBA = atoi(commandLine[1]);
 			int j;
 			int blockNumber; //starting LBA
 			int diskNumber;
@@ -110,21 +110,21 @@ void doRaid0() {
 			
 			for(j = 0; j < numberOfReads /*size*/; j++){ // number of blocks we have to write to
 				temp = currentLBA/strip;
-				stripLayer = temp/disks;a
+				stripLayer = temp/disks;
 				blockOfStrip = temp%strip;
 				blockNumber = stripLayer*strip + blockOfStrip;
 				diskNumber = temp%disks; //algorithm to calculate the disk we write to
 				disk_array_read( my_disk_array, diskNumber, blockNumber, data );
 				
-				printf("%d ",data);
+				printf("%s ", data);
 			}
 			printf("\n");
 		}
 		
 		else if(strcmp("WRITE", commandLine[0]) == 0){ //WRITE LBA SIZE VALUE
 			char *data = commandLine[3];
-			int numberOfWrites = commandLine[2]
-			int currentLBA = commandLine[1];
+			int numberOfWrites = atoi(commandLine[2]);
+			int currentLBA = atoi(commandLine[1]);
 			int j;
 			int blockNumber; //starting LBA
 			int diskNumber;
@@ -134,7 +134,7 @@ void doRaid0() {
 			
 			for(j = 0; j < numberOfWrites /*size*/; j++){ // number of blocks we have to write to
 				temp = currentLBA/strip;
-				stripLayer = temp/disks;a
+				stripLayer = temp/disks;
 				blockOfStrip = temp%strip;
 				blockNumber = stripLayer*strip + blockOfStrip;
 				diskNumber = temp%disks; //algorithm to calculate the disk we write to
