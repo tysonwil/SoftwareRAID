@@ -41,6 +41,14 @@ struct disk * disk_open( const char *diskname, int nblocks )
 	d->block_size = BLOCK_SIZE;
 	d->nblocks = nblocks;
 
+	//
+	// Zero out the disk
+	//
+	if(ftruncate(d->fd,0)<0) {
+		close(d->fd);
+		free(d);
+		return 0;
+	}
 	if(ftruncate(d->fd,d->nblocks*d->block_size)<0) {
 		close(d->fd);
 		free(d);
