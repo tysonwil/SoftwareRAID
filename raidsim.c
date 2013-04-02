@@ -102,7 +102,14 @@ void doRaid0() {
             printf("READ:\t%s\n",commandLine[0]);
 		}
 		else if(strcmp("WRITE", commandLine[0]) == 0){
-			//debugging
+						char *data = commandLine[3];
+			int j;
+			int diskNumber = (commandLine[1]/strip)%disk;
+			int blockNumber = ;
+			for(j = 0; j < commandLine[1] /*size*/; j++){
+				disk_array_write( my_disk_array, diskNumber, /*block*/, data );
+				diskNumber++;
+			}
             printf("WRITE:\t%s\n",commandLine[0]);
 		}
 		else if(strcmp("FAIL", commandLine[0]) == 0){
