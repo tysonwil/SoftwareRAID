@@ -72,40 +72,41 @@ void doRaid0() {
         //parse and detect what command we have
         //for this purpose, "line" is the string on the line from the trace file
         char *command = NULL;
+		command = (char*) malloc(512); 
+		if(str[strlen(str) - 1] == '\n')
+			str[strlen(str) - 1] = '\0'; //remove newline char
         command = strtok(str," "); //split string on space delimiter into tokens
-        
-        
-        if(strcmp("READ", command) == 0){ //READ LBA SIZE
-            command++; //LBA
-            lba = atoi(command);
-            command++; //size
-            commandSize = atoi(command);
+        char* commandLine[4];
+
+		int i = 0;
+		while( command != NULL ) {
+            if (*command != '\0') {
+				commandLine[i] = malloc(7*sizeof(char));
+                commandLine[i] = command;
+            }
+			i++
+            command = strtok( NULL, " " );
         }
-        else if(strcmp("WRITE", command) == 0){ //WRITE LBA SIZE VALUE
-            command++; //LBA
-            lba = atoi(command);
-            command++; //size
-            commandSize = atoi(command);
-            command++; //VALUE
-            value = atoi(command);
-        }
-        else if(strcmp("FAIL", command) == 0){ //FAIL DISK
-            command++; //DISK
-            commandDisk = atoi(command);
-            
-        }
-        else if(strcmp("RECOVER", command) == 0){ //RECOVER DISK
-            command++; //DISK
-            commandDisk = atoi(command);
-        }
-        else if(strcmp("END", command) == 0){ // END
+        else if(strcmp("READ", commandLine[0]) == 0){
+			
+		}
+		else if(strcmp("WRITE", commandLine[0]) == 0){
+		
+		}
+		else if(strcmp("FAIL", commandLine[0]) == 0){
+		
+		}
+		else if(strcmp("RECOVER", commandLine[0]) == 0){
+		
+		}
+        else if(strcmp("END", commandLine[0]) == 0){ // END
             break;
         }
 		else{
 			write(STDERR_FILENO, error_msg, strlen(error_msg));
 			exit(1);
 		}
-        
+        free(command);
     }
     
     
