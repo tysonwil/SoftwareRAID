@@ -76,7 +76,7 @@ void doRaid0() {
 		command = (char*) malloc(512);
 		if(str[strlen(str) - 1] == '\n')
 			str[strlen(str) - 1] = '\0'; //remove newline char
-                
+        
         char * commandLine[5];
         
         command = strtok(str, " "); //split string on space delimiter into tokens
@@ -106,14 +106,20 @@ void doRaid0() {
 			int temp;
 			
 			for (j = 0; j < numberOfReads /*size*/; j++){ // number of blocks we have to write to
-				temp = currentLBA/strip;
-				stripLayer = temp/disks;
+				temp = currentLBA / strip;
+				stripLayer = temp / disks;
 				blockOfStrip = currentLBA % strip;
-				blockNumber = stripLayer*strip + blockOfStrip;
-				diskNumber = temp%disks; //algorithm to calculate the disk we read from
-                printf("READ disk: %d block: %d\n",diskNumber,blockNumber);
-				disk_array_read( my_disk_array, diskNumber, blockNumber, data );
-				
+				blockNumber = stripLayer * strip + blockOfStrip;
+				diskNumber = temp % disks; //algorithm to calculate the disk we read from
+                printf("READ disk: %d block: %d\n", diskNumber,blockNumber);
+                
+                if (working_disks[diskNumber])
+                    disk_array_read( my_disk_array, diskNumber, blockNumber, data );
+				else {
+                    printf("Failed disk: ERROR\n");
+                    write(STDERR_FILENO, error_msg, strlen(error_msg));
+                    exit(-1);
+                }
 				printf("%s ", data);
 			}
 			//printf("\n");
@@ -143,6 +149,7 @@ void doRaid0() {
 		
 		else if(strcmp("FAIL", commandLine[0]) == 0) { //FAIL DISK
             disk_array_fail_disk( my_disk_array, atoi(commandLine[1]));
+            working_disks[atoi(commandLine[1])] = FALSE;
 		}
 		
 		else if(strcmp("RECOVER", commandLine[0]) == 0) { //RECOVER DISK
@@ -193,8 +200,6 @@ void doRaid5() {
  */
 void doRaid4() {
     char *data;
-	int i = 0;
-	int j = 0;
 	int blockNumber; //starting LBA
 	int diskNumber;
 	int stripLayer;
@@ -236,7 +241,7 @@ void doRaid4() {
 			for(j = 0; j < numberOfReads /*size*/; j++){ // number of blocks we have to write to
 				temp = currentLBA / strip;
 				stripLayer = temp / (disks-1); //make it seem like we do not have the last disk
-				blockOfStrip = temp % strip;
+				blockOfStrip = currentLBA % strip;
 				blockNumber = stripLayer * strip + blockOfStrip;
 				diskNumber = temp % (disks-1); //algorithm to calculate the disk we read from
                 printf("READ disk: %d block: %d\n", diskNumber,blockNumber);
@@ -414,7 +419,7 @@ void doRaid10() {
 				blockNumber = stripLayer * strip + blockOfStrip;
                 
                 diskNumber = 2 * (temp % (disks / 2)); //algorithm to calculate the disk we write to
-                                
+                
                 printf("WRITE disk: %d block: %d\n",diskNumber,blockNumber);
 				disk_array_write( my_disk_array, diskNumber, blockNumber, data );
                 printf("WRITE disk: %d block: %d\n", (diskNumber + 1) ,blockNumber);
