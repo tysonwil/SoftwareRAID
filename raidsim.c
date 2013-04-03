@@ -243,16 +243,25 @@ void doRaid10() {
             
             for(j = 0; j < numberOfReads /*size*/; j++){ // number of blocks we have to write to
                 temp = currentLBA/strip;
-                stripLayer = temp/disks;
+                
+                stripLayer = temp / (disks / 2);
                 blockOfStrip = currentLBA % strip;
-                blockNumber = stripLayer*strip + blockOfStrip;
-                diskNumber = temp%disks; //algorithm to calculate the disk we read from
+                blockNumber = stripLayer * strip + blockOfStrip;
+                
+                diskNumber = 2 * (temp % (disks / 2)); //algorithm to calculate the disk we write to
+                
+                //has disk failed?
+                if(!working_disks[diskNumber]){
+                    ++diskNumber;
+                    
+                    
+                }
+                
                 printf("READ disk: %d block: %d\n",diskNumber,blockNumber);
                 disk_array_read( my_disk_array, diskNumber, blockNumber, data );
                 
                 printf("%s ", data);
             }
-            //printf("\n");
         }
         
         else if (strcmp("WRITE", commandLine[0]) == 0){ //WRITE LBA SIZE VALUE
