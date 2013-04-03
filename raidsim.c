@@ -62,7 +62,8 @@ int * working_disks = NULL;
 void doRaid0() {
     int counter;
     
-    while(fgets(str, 100, trace_file) != NULL){//for each line
+    while (fgets(str, 100, trace_file) != NULL) {//for each line
+        printf("%s",str);
         //parse and detect what command we have
         //for this purpose, "line" is the string on the line from the trace file
         char *command = NULL;
@@ -82,21 +83,25 @@ void doRaid0() {
 			exit(-1);
         }
         
-        char* commandLine[counter];
+        char * commandLine[5];
         
         command = strtok(str," "); //split string on space delimiter into tokens
         
 		int i = 0;
 		while( command != NULL ) {
-            if (*command != '\0') {
-				commandLine[i] = malloc(7*sizeof(char));
+            //if (*command != '\n') {
+				commandLine[i] = malloc(8 * sizeof(char));
                 commandLine[i] = command;
-            }
+          //  }
 			i++;
             command = strtok( NULL, " " );
         }
+        int j;
+        for (j=0; j<i; j++) {
+            printf("%s\n",commandLine[j]);
+        }
         
-        if(strcmp("READ", commandLine[0]) == 0){ //READ LBA SIZE
+        if (strcmp("READ", commandLine[0]) == 0){ //READ LBA SIZE
 			char *data;
 			data = malloc(512);
 			int numberOfReads = atoi(commandLine[2]);
@@ -143,21 +148,21 @@ void doRaid0() {
 		}
 		
 		else if(strcmp("FAIL", commandLine[0]) == 0){ //FAIL DISK
-            disk_array_fail_disk( my_disk_array, commandLine[1]);
+            
 		}
 		
 		else if(strcmp("RECOVER", commandLine[0]) == 0){ //RECOVER DISK
-            disk_array_recover_disk( my_disk_array, commandLine[1]);
+            
 		}
 		
         else if(strcmp("END", commandLine[0]) == 0){ // END
-			break;
-       	}
+            break;
+        }
 		
 		else{
 			//debugging
 			printf("%s\n","Trace File Error");
-
+            
 			write(STDERR_FILENO, error_msg, strlen(error_msg));
 			exit(-1);
 		}
@@ -229,14 +234,13 @@ void chooseSystem(int choice) {
 
 
 int main(int argc, char * argv[]) {
-    
-    
+
     
 	//has appropiate amount of arguments?
 	if ((argc != 11) && (argc != 13)) {
 		//debugging
 		printf("%s\n","Arg Error");
-
+        
 		write(STDERR_FILENO, error_msg, strlen(error_msg));
 		exit(-1);
 	}
