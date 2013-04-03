@@ -69,7 +69,7 @@ void doRaid0() {
     char *data;
     data = malloc(1024);
     
-    while (fgets(str, 100, trace_file) != NULL) {//for each line
+    while (fgets(str, 100, trace_file) != NULL) { //for each line
         //parse and detect what command we have
         //for this purpose, "line" is the string on the line from the trace file
         char *command = NULL;
@@ -90,12 +90,12 @@ void doRaid0() {
             command = strtok( NULL, " " );
         }
         int j;
-        for (j=0; j<i; j++) {
+        for (j=0; j < i; j++) {
             printf("%s ",commandLine[j]);
         }
         printf("\n");
         
-        if (strcmp("READ", commandLine[0]) == 0){ //READ LBA SIZE
+        if (strcmp("READ", commandLine[0]) == 0) { //READ LBA SIZE
 			int numberOfReads = atoi(commandLine[2]);
 			int currentLBA = atoi(commandLine[1]);
 			int j;
@@ -105,13 +105,12 @@ void doRaid0() {
 			int blockOfStrip;
 			int temp;
 			
-			for (j = 0; j < numberOfReads /*size*/; j++){ // number of blocks we have to write to
-				temp = currentLBA / strip;
+			for (j = currentLBA; j < (currentLBA + numberOfReads) /*size*/; j++) { // number of blocks we have to write to
+				temp = j / strip;
 				stripLayer = temp / disks;
-				blockOfStrip = currentLBA % strip;
+				blockOfStrip = j % strip;
 				blockNumber = stripLayer * strip + blockOfStrip;
 				diskNumber = temp % disks; //algorithm to calculate the disk we read from
-                printf("READ disk: %d block: %d\n", diskNumber,blockNumber);
                 
                 if (working_disks[diskNumber])
                     disk_array_read( my_disk_array, diskNumber, blockNumber, data );
@@ -125,7 +124,7 @@ void doRaid0() {
 			//printf("\n");
 		}
 		
-		else if(strcmp("WRITE", commandLine[0]) == 0){ //WRITE LBA SIZE VALUE
+		else if (strcmp("WRITE", commandLine[0]) == 0){ //WRITE LBA SIZE VALUE
 			char *data = commandLine[3];
 			int numberOfWrites = atoi(commandLine[2]);
 			int currentLBA = atoi(commandLine[1]);
@@ -136,31 +135,31 @@ void doRaid0() {
 			int blockOfStrip;
 			int temp;
 			
-			for(j = 0; j < numberOfWrites /*size*/; j++){ // number of blocks we have to write to
-				temp = currentLBA/strip;
+			for (j = currentLBA; j < (currentLBA + numberOfWrites) /*size*/; j++) { // number of blocks we have to write to
+				temp = j / strip;
 				stripLayer = temp/disks;
-				blockOfStrip = currentLBA % strip;
-				blockNumber = stripLayer*strip + blockOfStrip;
-				diskNumber = temp%disks; //algorithm to calculate the disk we write to
-                printf("WRITE disk: %d block: %d\n",diskNumber,blockNumber);
+				blockOfStrip = j % strip;
+				blockNumber = stripLayer * strip + blockOfStrip;
+				diskNumber = temp % disks; //algorithm to calculate the disk we write to
 				disk_array_write( my_disk_array, diskNumber, blockNumber, data );
 			}
 		}
 		
-		else if(strcmp("FAIL", commandLine[0]) == 0) { //FAIL DISK
+		else if (strcmp("FAIL", commandLine[0]) == 0) { //FAIL DISK
             disk_array_fail_disk( my_disk_array, atoi(commandLine[1]));
             working_disks[atoi(commandLine[1])] = FALSE;
 		}
 		
-		else if(strcmp("RECOVER", commandLine[0]) == 0) { //RECOVER DISK
+		else if (strcmp("RECOVER", commandLine[0]) == 0) { //RECOVER DISK
             disk_array_recover_disk( my_disk_array, atoi(commandLine[1]));
 		}
 		
-        else if(strcmp("END", commandLine[0]) == 0){ // END
+        else if (strcmp("END", commandLine[0]) == 0){ // END
+            disk_array_print_stats(my_disk_array);
             break;
         }
 		
-		else{
+		else { 
 			//debugging
 			printf("%s\n","Trace File Error");
             
@@ -238,13 +237,12 @@ void doRaid4() {
 			int numberOfReads = atoi(commandLine[2]);
 			int currentLBA = atoi(commandLine[1]);
 			
-			for(j = 0; j < numberOfReads /*size*/; j++){ // number of blocks we have to write to
-				temp = currentLBA / strip;
+			for (j = currentLBA; j < (currentLBA + numberOfReads) /*size*/; j++) { // number of blocks we have to write to
+				temp = j / strip;
 				stripLayer = temp / (disks-1); //make it seem like we do not have the last disk
-				blockOfStrip = currentLBA % strip;
+				blockOfStrip = j % strip;
 				blockNumber = stripLayer * strip + blockOfStrip;
 				diskNumber = temp % (disks-1); //algorithm to calculate the disk we read from
-                printf("READ disk: %d block: %d\n", diskNumber,blockNumber);
 				disk_array_read( my_disk_array, diskNumber, blockNumber, data );
 				
 				//if disk_array_read returns -1, we tried to read froma failed disk (from disk-array.h)
@@ -265,13 +263,12 @@ void doRaid4() {
 			int currentLBA = atoi(commandLine[1]);
             
 			
-			for(j = 0; j < numberOfWrites /*size*/; j++){ // number of blocks we have to write to
-				temp = currentLBA/strip;
-				stripLayer = temp/(disks-1);
-				blockOfStrip = temp%strip;
-				blockNumber = stripLayer*strip + blockOfStrip;
-				diskNumber = temp%(disks-1); //algorithm to calculate the disk we write to
-                printf("WRITE disk: %d block: %d\n",diskNumber,blockNumber);
+			for (j = currentLBA; j < (currentLBA + numberOfWrites) /*size*/; j++) { // number of blocks we have to write to
+				temp = j / strip;
+				stripLayer = temp / (disks-1);
+				blockOfStrip = j % strip;
+				blockNumber = stripLayer * strip + blockOfStrip;
+				diskNumber = temp % (disks-1); //algorithm to calculate the disk we write to
 				disk_array_write( my_disk_array, diskNumber, blockNumber, data );
 				
 				//write to parity disk (last disk)
@@ -299,11 +296,12 @@ void doRaid4() {
 			}
 		}
 		
-        else if(strcmp("END", commandLine[0]) == 0){ // END
+        else if(strcmp("END", commandLine[0]) == 0) { // END
+            disk_array_print_stats(my_disk_array);
             break;
         }
 		
-		else{
+		else {
 			//debugging
 			printf("%s\n","Trace File Error");
             
@@ -378,29 +376,28 @@ void doRaid10() {
 			int blockOfStrip;
 			int temp;
 			
-			for(j = 0; j < numberOfReads /*size*/; j++){ // number of blocks we have to write to
-				temp = currentLBA/strip;
+			for (j = currentLBA; j < (currentLBA + numberOfReads) /*size*/; j++) { // number of blocks we have to write to
+				temp = j/strip;
                 
 				stripLayer = temp / (disks / 2);
-				blockOfStrip = currentLBA % strip;
+				blockOfStrip = j % strip;
 				blockNumber = stripLayer * strip + blockOfStrip;
                 
                 diskNumber = 2 * (temp % (disks / 2)); //algorithm to calculate the disk we write to
                 
                 //has disk failed?
-                if(!working_disks[diskNumber]){
+                if (!working_disks[diskNumber]) {
                     ++diskNumber;
                 }
                 
-                printf("READ disk: %d block: %d ",diskNumber,blockNumber);
                 disk_array_read( my_disk_array, diskNumber, blockNumber, data );
                 
-				printf("data: %s\n", data);
+				printf("%s ", data);
 			}
 		}
 		
         
-		else if(strcmp("WRITE", commandLine[0]) == 0){ //WRITE LBA SIZE VALUE
+		else if (strcmp("WRITE", commandLine[0]) == 0) { //WRITE LBA SIZE VALUE
 			char *data = commandLine[3];
 			int numberOfWrites = atoi(commandLine[2]);
 			int currentLBA = atoi(commandLine[1]);
@@ -411,18 +408,16 @@ void doRaid10() {
 			int blockOfStrip;
 			int temp;
 			
-			for(j = 0; j < numberOfWrites /*size*/; j++){ // number of blocks we have to write to
-				temp = currentLBA/strip;
+			for (j = currentLBA; j < (currentLBA + numberOfWrites) /*size*/; j++) { // number of blocks we have to write to
+				temp = j / strip;
                 
 				stripLayer = temp / (disks / 2);
-				blockOfStrip = currentLBA % strip;
+				blockOfStrip = j % strip;
 				blockNumber = stripLayer * strip + blockOfStrip;
                 
                 diskNumber = 2 * (temp % (disks / 2)); //algorithm to calculate the disk we write to
                 
-                printf("WRITE disk: %d block: %d\n",diskNumber,blockNumber);
 				disk_array_write( my_disk_array, diskNumber, blockNumber, data );
-                printf("WRITE disk: %d block: %d\n", (diskNumber + 1) ,blockNumber);
                 disk_array_write( my_disk_array, (diskNumber + 1), blockNumber, data );
 			}
 		}
@@ -434,7 +429,7 @@ void doRaid10() {
 		
         
         //
-		else if(strcmp("RECOVER", commandLine[0]) == 0) { //RECOVER DISK
+		else if (strcmp("RECOVER", commandLine[0]) == 0) { //RECOVER DISK
             disk_array_recover_disk( my_disk_array, atoi(commandLine[1]));
             
             //Personal Note: HERE or after following portion?
@@ -448,7 +443,7 @@ void doRaid10() {
                 mirror_disk = (atoi(commandLine[1]) + 1);
             
             //Personal Note:
-            if(working_disks[mirror_disk]){
+            if (working_disks[mirror_disk]){
                 int k = 0;
                 
                 for(k = 0; k < size; ++k){
@@ -456,7 +451,7 @@ void doRaid10() {
                     disk_array_write( my_disk_array, atoi(commandLine[1]), k, data);
                 }
                 
-            }else{
+            } else {
                 //debugging
                 printf("Both disks had previously failed!\n");
                 
@@ -466,11 +461,12 @@ void doRaid10() {
 		}
 		
         
-        else if(strcmp("END", commandLine[0]) == 0){ // END
+        else if (strcmp("END", commandLine[0]) == 0) { // END
+            disk_array_print_stats(my_disk_array);
             break;
         }
 		
-		else{
+		else {
 			//debugging
 			printf("%s\n","Trace File Error");
             
@@ -504,7 +500,7 @@ char toParity(int parityDisk, int blockNumber, int diskNumber) {
 	int x;
 	//xor everything but parity
 	result = parityArray[0];
-	for(x = 1; x < disks-1; x++){
+	for (x = 1; x < disks-1; x++) {
 		result = parityArray[x] ^ result;
 	}
 	return result;
@@ -561,7 +557,7 @@ void chooseSystem(int choice) {
 
 int main(int argc, char * argv[]) {
     
-    
+    /*
 	//has appropiate amount of arguments?
 	if ((argc != 11) && (argc != 13)) {
 		//debugging
@@ -570,6 +566,7 @@ int main(int argc, char * argv[]) {
 		write(STDERR_FILENO, error_msg, strlen(error_msg));
 		exit(-1);
 	}
+     */
     
 	//set
 	for (counter = 0; counter < (argc - 1)/2; ++counter) {
