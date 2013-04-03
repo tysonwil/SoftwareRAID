@@ -242,8 +242,8 @@ void doRaid4() {
 				
 				//if disk_array_read returns -1, we tried to read froma failed disk (from disk-array.h)
 				if(disk_array_read( my_disk_array, diskNumber, blockNumber, data ) == -1){
-					printf("ERROR\n");
-					return;
+					resultant = fromParity(blockNumber, diskNumber); //retreive missing value
+					data = &resultant;
 				}
 				
 				printf("%s ", data);
