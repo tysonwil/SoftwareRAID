@@ -143,16 +143,16 @@ void doRaid0() {
 		}
 		
 		else if(strcmp("FAIL", commandLine[0]) == 0){ //FAIL DISK
-            
+            disk_array_fail_disk( my_disk_array, commandLine[1]);
 		}
 		
 		else if(strcmp("RECOVER", commandLine[0]) == 0){ //RECOVER DISK
-            
+            disk_array_recover_disk( my_disk_array, commandLine[1]);
 		}
 		
-        	else if(strcmp("END", commandLine[0]) == 0){ // END
-            		break;
-       		}
+        else if(strcmp("END", commandLine[0]) == 0){ // END
+			break;
+       	}
 		
 		else{
 			//debugging
