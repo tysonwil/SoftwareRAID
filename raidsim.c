@@ -61,9 +61,10 @@ int * working_disks = NULL;
  */
 void doRaid0() {
     int counter;
+    char *data;
+    data = malloc(1024);
     
     while (fgets(str, 100, trace_file) != NULL) {//for each line
-        //printf("%s",str);
         //parse and detect what command we have
         //for this purpose, "line" is the string on the line from the trace file
         char *command = NULL;
@@ -71,12 +72,7 @@ void doRaid0() {
 		if(str[strlen(str) - 1] == '\n')
 			str[strlen(str) - 1] = '\0'; //remove newline char
         
-       /* command = strtok(str," "); //split string on space delimiter into tokens
-        counter = 0;
-        while(command != NULL){
-            ++counter;
-            command = strtok(NULL," ");
-        }
+        /*
         
         if(counter > 4){
             write(STDERR_FILENO, error_msg, strlen(error_msg));
@@ -103,8 +99,6 @@ void doRaid0() {
         printf("\n");
         
         if (strcmp("READ", commandLine[0]) == 0){ //READ LBA SIZE
-			char *data;
-			data = malloc(512);
 			int numberOfReads = atoi(commandLine[2]);
 			int currentLBA = atoi(commandLine[1]);
 			int j;
@@ -119,12 +113,13 @@ void doRaid0() {
 				stripLayer = temp/disks;
 				blockOfStrip = temp%strip;
 				blockNumber = stripLayer*strip + blockOfStrip;
-				diskNumber = temp%disks; //algorithm to calculate the disk we write to
+				diskNumber = temp%disks; //algorithm to calculate the disk we read from
+                printf("READ disk: %d block: %d\n",diskNumber,blockNumber);
 				disk_array_read( my_disk_array, diskNumber, blockNumber, data );
 				
 				printf("%s ", data);
 			}
-			printf("\n");
+			//printf("\n");
 		}
 		
 		else if(strcmp("WRITE", commandLine[0]) == 0){ //WRITE LBA SIZE VALUE
@@ -144,16 +139,17 @@ void doRaid0() {
 				blockOfStrip = temp%strip;
 				blockNumber = stripLayer*strip + blockOfStrip;
 				diskNumber = temp%disks; //algorithm to calculate the disk we write to
+                printf("WRITE disk: %d block: %d\n",diskNumber,blockNumber);
 				disk_array_write( my_disk_array, diskNumber, blockNumber, data );
 			}
 		}
 		
-		else if(strcmp("FAIL", commandLine[0]) == 0){ //FAIL DISK
-            
+		else if(strcmp("FAIL", commandLine[0]) == 0) { //FAIL DISK
+            disk_array_fail_disk( my_disk_array, commandLine[1]);
 		}
 		
-		else if(strcmp("RECOVER", commandLine[0]) == 0){ //RECOVER DISK
-            
+		else if(strcmp("RECOVER", commandLine[0]) == 0) { //RECOVER DISK
+            disk_array_recover_disk( my_disk_array, commandLine[1]);
 		}
 		
         else if(strcmp("END", commandLine[0]) == 0){ // END
