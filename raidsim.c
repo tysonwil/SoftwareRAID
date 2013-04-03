@@ -226,10 +226,10 @@ void doRaid5() {
 			int increment = (currentLBA/disks + 1) + (currentLBA/(disks^2) + 1);
 			currentLBA += increment;
 			
-			for(j = 0; j < numberOfReads /*size*/; j++){ // number of blocks we have to write to
-				temp = currentLBA / strip;
+			for (j = currentLBA; j < (currentLBA + numberOfReads) /*size*/; j++) { // number of blocks we have to write to
+				temp = j / strip;
 				stripLayer = temp / disks; //make it seem like we do not have the parity disk
-				blockOfStrip = currentLBA % strip;
+				blockOfStrip = j % strip;
 				blockNumber = stripLayer * strip + blockOfStrip;
 				diskNumber = temp % disks; //algorithm to calculate the disk we read from
 				int numberOfStripes = size/strip;
@@ -265,18 +265,18 @@ void doRaid5() {
 			int increment = (currentLBA/disks + 1) + (currentLBA/(disks^2) + 1);
 			currentLBA += increment;
 			
-			for(j = 0; j < numberOfWrites /*size*/; j++){ // number of blocks we have to write to
-				temp = currentLBA/strip;
+			for (j = currentLBA; j < (currentLBA + numberOfWrites) /*size*/; j++) { // number of blocks we have to write to
+				temp = j / strip;
 				stripLayer = temp/disks;
-				blockOfStrip = temp%strip;
-				blockNumber = stripLayer*strip + blockOfStrip;
-				diskNumber = temp%(disks); //algorithm to calculate the disk we write to
+				blockOfStrip = j % strip;
+				blockNumber = stripLayer * strip + blockOfStrip;
+				diskNumber = temp % (disks); //algorithm to calculate the disk we write to
 
 				
 				int numberOfStripes = size/strip;
 				j=0;
-				for(i = 0; i < (numberOfStripes);i++){
-					if(j == (disks-1)){ //last disk reset
+				for (i = 0; i < (numberOfStripes);i++) {
+					if (j == (disks-1)) { //last disk reset
 						j = 0;
 					}
 					if((stripLayer == i) && (diskNumber == j)){
