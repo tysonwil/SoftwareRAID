@@ -63,7 +63,7 @@ void doRaid0() {
     int counter;
     
     while (fgets(str, 100, trace_file) != NULL) {//for each line
-        printf("%s",str);
+        //printf("%s",str);
         //parse and detect what command we have
         //for this purpose, "line" is the string on the line from the trace file
         char *command = NULL;
@@ -71,7 +71,7 @@ void doRaid0() {
 		if(str[strlen(str) - 1] == '\n')
 			str[strlen(str) - 1] = '\0'; //remove newline char
         
-        command = strtok(str," "); //split string on space delimiter into tokens
+       /* command = strtok(str," "); //split string on space delimiter into tokens
         counter = 0;
         while(command != NULL){
             ++counter;
@@ -82,24 +82,25 @@ void doRaid0() {
             write(STDERR_FILENO, error_msg, strlen(error_msg));
 			exit(-1);
         }
+        */
         
         char * commandLine[5];
         
-        command = strtok(str," "); //split string on space delimiter into tokens
+        command = strtok(str, " "); //split string on space delimiter into tokens
         
 		int i = 0;
 		while( command != NULL ) {
-            //if (*command != '\n') {
-				commandLine[i] = malloc(8 * sizeof(char));
-                commandLine[i] = command;
-          //  }
+            //commandLine[i] = malloc(8 * sizeof(char));
+            //printf("%s\n",command);
+            commandLine[i] = command;
 			i++;
             command = strtok( NULL, " " );
         }
         int j;
         for (j=0; j<i; j++) {
-            printf("%s\n",commandLine[j]);
+            printf("%s ",commandLine[j]);
         }
+        printf("\n");
         
         if (strcmp("READ", commandLine[0]) == 0){ //READ LBA SIZE
 			char *data;
