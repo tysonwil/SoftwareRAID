@@ -69,8 +69,10 @@ void doRaid0() {
     char *data;
     data = malloc(1024);
     
-    while (fgets(str, 100, trace_file) != NULL) { //for each line
-        //parse and detect what command we have
+    while (fgets(str, 100, trace_file) != NULL) {
+        printf("%s", str);
+        
+        //for each line parse and detect what command we have
         //for this purpose, "line" is the string on the line from the trace file
         char *command = NULL;
 		command = (char*) malloc(512);
@@ -89,12 +91,9 @@ void doRaid0() {
 			i++;
             command = strtok( NULL, " " );
         }
-        int j;
-        for (j=0; j < i; j++) {
-            printf("%s ",commandLine[j]);
-        }
-        printf("\n");
+
         
+         
         if (strcmp("READ", commandLine[0]) == 0) { //READ LBA SIZE
 			int numberOfReads = atoi(commandLine[2]);
 			int currentLBA = atoi(commandLine[1]);
@@ -104,6 +103,7 @@ void doRaid0() {
 			int stripLayer;
 			int blockOfStrip;
 			int temp;
+            int printedData;
 			
 			for (j = currentLBA; j < (currentLBA + numberOfReads) /*size*/; j++) { // number of blocks we have to write to
 				temp = j / strip;
@@ -112,19 +112,18 @@ void doRaid0() {
 				blockNumber = stripLayer * strip + blockOfStrip;
 				diskNumber = temp % disks; //algorithm to calculate the disk we read from
                 
-                if (working_disks[diskNumber])
-                    disk_array_read( my_disk_array, diskNumber, blockNumber, data );
-				else {
-                    printf("Failed disk: ERROR\n");
-                    write(STDERR_FILENO, error_msg, strlen(error_msg));
-                    exit(-1);
+                int readCheck = disk_array_read( my_disk_array, diskNumber, blockNumber, data );
+				if (readCheck == -1) {
+                    printf("ERROR ");
                 }
-				printf("%s ", data);
+                else {
+                    printedData = atoi(data);
+                    printf("%d ", printedData);
+                }
 			}
-			//printf("\n");
 		}
 		
-		else if (strcmp("WRITE", commandLine[0]) == 0){ //WRITE LBA SIZE VALUE
+		else if (strcmp("WRITE", commandLine[0]) == 0) { //WRITE LBA SIZE VALUE
 			char *data = commandLine[3];
 			int numberOfWrites = atoi(commandLine[2]);
 			int currentLBA = atoi(commandLine[1]);
@@ -377,7 +376,7 @@ void doRaid10() {
 			int temp;
 			
 			for (j = currentLBA; j < (currentLBA + numberOfReads) /*size*/; j++) { // number of blocks we have to write to
-				temp = j/strip;
+				temp = j / strip;
                 
 				stripLayer = temp / (disks / 2);
 				blockOfStrip = j % strip;
@@ -557,36 +556,36 @@ void chooseSystem(int choice) {
 
 int main(int argc, char * argv[]) {
     
-    /*
+    
 	//has appropiate amount of arguments?
-	if ((argc != 11) && (argc != 13)) {
+	if ((argc != 11) && (argc != 12)) {
 		//debugging
 		printf("%s\n","Arg Error");
         
 		write(STDERR_FILENO, error_msg, strlen(error_msg));
 		exit(-1);
 	}
-     */
+     
     
 	//set
-	for (counter = 0; counter < (argc - 1)/2; ++counter) {
-		if (strcmp("-level", argv[2*counter+1]) == 0){
+	for (counter = 0; counter <= (argc)/2; ++counter) {
+		if (strcmp("-level", argv[2*counter+1]) == 0) {
 			level = atoi(argv[2*counter+2]);
             
-		} else if(strcmp("-strip", argv[2*counter+1]) == 0) {
+		} else if (strcmp("-strip", argv[2*counter+1]) == 0) {
 			strip = atoi(argv[2*counter+2]);
             
-		} else if(strcmp("-disks", argv[2*counter+1]) == 0) {
+		} else if (strcmp("-disks", argv[2*counter+1]) == 0) {
 			disks = atoi(argv[2*counter+2]);
             
-		} else if(strcmp("-size", argv[2*counter+1]) == 0) {
+		} else if (strcmp("-size", argv[2*counter+1]) == 0) {
 			size = atoi(argv[2*counter+2]);
             
-		} else if(strcmp("-trace", argv[2*counter+1]) == 0) {
+		} else if (strcmp("-trace", argv[2*counter+1]) == 0) {
 			trace = argv[2*counter+2];
             
-		} else if(strcmp("-verbose", argv[2*counter+1]) == 0) {
-			verbose = atoi(argv[2*counter+2]);
+		} else if (strcmp("-verbose", argv[2*counter+1]) == 0) {
+			verbose = 1;
 		}
 	}
     
