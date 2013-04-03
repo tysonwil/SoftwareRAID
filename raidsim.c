@@ -150,11 +150,14 @@ void doRaid0() {
             
 		}
 		
-        else if(strcmp("END", commandLine[0]) == 0){ // END
-            break;
-        }
+        	else if(strcmp("END", commandLine[0]) == 0){ // END
+            		break;
+       		}
 		
 		else{
+			//debugging
+			printf("%s\n","Trace File Error");
+
 			write(STDERR_FILENO, error_msg, strlen(error_msg));
 			exit(-1);
 		}
@@ -230,7 +233,10 @@ int main(int argc, char * argv[]) {
     
     
 	//has appropiate amount of arguments?
-	if ((argc != 11) || (argc != 13)) {
+	if ((argc != 11) && (argc != 13)) {
+		//debugging
+		printf("%s\n","Arg Error");
+
 		write(STDERR_FILENO, error_msg, strlen(error_msg));
 		exit(-1);
 	}
@@ -259,7 +265,7 @@ int main(int argc, char * argv[]) {
     
 	//CHECK ARGUMENT VALUES
 	//valid level of RAID?
-	if ((level != 0) || (level != 10) || (level != 4) || (level != 5)) {
+	if ((level != 0) && (level != 10) && (level != 4) && (level != 5)) {
 		flag = 1;
 		//debugging
 		printf("%s\n","Invalid or Not Provided Level");
