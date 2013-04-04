@@ -198,6 +198,7 @@ void doRaid4() {
 	int stripLayer;
 	int blockOfStrip;
 	int temp;
+	int numberOfReads;
     data = malloc(1024);
     
     
@@ -225,7 +226,7 @@ void doRaid4() {
         }
         
         if (strcmp("READ", commandLine[0]) == 0) { //READ LBA SIZE
-			int numberOfReads = atoi(commandLine[2]);
+			numberOfReads = atoi(commandLine[2]);
 			int currentLBA = atoi(commandLine[1]);
             int j, printedData;
 			int threshold = currentLBA + numberOfReads;
@@ -262,7 +263,7 @@ void doRaid4() {
             int writeCheck;
             int j;
 			int threshold = currentLBA + numberOfReads;
-			if(threshold > size*(disks-1)) //we need this so we do not write more than the total amount of blocks in all disks
+			if (threshold > size*(disks-1)) //we need this so we do not write more than the total amount of blocks in all disks
 				threshold = size*(disks-1); //ex if there are only 10 blocks, we can't write >10 times
             
 			
@@ -274,7 +275,6 @@ void doRaid4() {
 				diskNumber = temp % (disks-1); //algorithm to calculate the disk we write to
                 
 				//writeCheck = disk_array_write( my_disk_array, diskNumber, blockNumber, data );
-				
                 
 				//write to parity disk (last disk)
 				int parityDisk = disks - 1;
@@ -284,7 +284,7 @@ void doRaid4() {
 				int writeCheck = disk_array_write( my_disk_array, diskNumber, blockNumber, data);
 				
 				//if we detect that we are writing to a failed disk, rewrite 0 and print ERROR
-                if (writeCheck == -1){
+                if (writeCheck == -1) {
 					disk_array_write( my_disk_array, diskNumber, blockNumber, 0);
 					printf("ERROR: writing into failed disk\n");
 					return;
