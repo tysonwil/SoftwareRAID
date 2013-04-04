@@ -55,7 +55,7 @@ disk_array_t my_disk_array = NULL;
 FILE * trace_file = NULL;
 int * working_disks = NULL;
 
- // used to load respective values in blocks of stripe
+// used to load respective values in blocks of stripe
 char result; //the bitwise result of XOR's
 
 
@@ -91,7 +91,7 @@ void doRaid0() {
 			i++;
             command = strtok( NULL, " " );
         }
-         
+        
         if (strcmp("READ", commandLine[0]) == 0) { //READ LBA SIZE
 			int numberOfReads = atoi(commandLine[2]);
 			int currentLBA = atoi(commandLine[1]);
@@ -161,7 +161,7 @@ void doRaid0() {
             break;
         }
 		
-		else { 
+		else {
 			//debugging
 			printf("%s\n","Trace File Error");
             
@@ -208,7 +208,7 @@ void doRaid4() {
     
     
     while (fgets(str, 100, trace_file) != NULL) {
-        printf("%s", str);
+        printf("%s ", str);
         
         //for each line parse and detect what command we have
         //for this purpose, "line" is the string on the line from the trace file
@@ -367,7 +367,11 @@ void doRaid10() {
         }
         int j;
         for (j=0; j<i; j++) {
-            printf("%s ",commandLine[j]);
+            printf("%s",commandLine[j]);
+            
+            //THIS SOMEHOW FIXES test 2
+            if(j != i-1)
+                printf(" ");
         }
         printf("\n");
         
@@ -505,7 +509,7 @@ char toParity(int parityDisk, int blockNumber, int diskNumber) {
 			j++;
 		}
 	}
-
+    
 	//xor everything but failed disk
     int x;
 	for (x = 1; x < disks; x++) {
@@ -577,7 +581,7 @@ int main(int argc, char * argv[]) {
 		write(STDERR_FILENO, error_msg, strlen(error_msg));
 		exit(-1);
 	}
-     
+    
     
 	//set
 	for (counter = 0; counter <= (argc)/2; ++counter) {
@@ -648,9 +652,9 @@ int main(int argc, char * argv[]) {
 		working_disks[i] = TRUE;
     }
     
-  //  for(i = 0; i < disks; i++){
-     //   disk_array_recover_disk( my_disk_array, i);
-  //  }
+    //  for(i = 0; i < disks; i++){
+    //   disk_array_recover_disk( my_disk_array, i);
+    //  }
     
     
     chooseSystem(level);
