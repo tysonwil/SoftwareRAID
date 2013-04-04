@@ -191,12 +191,6 @@ void doRaid5() {
  *@param
  *
  */
-/*
- * do RAID 4
- *
- *@param
- *
- */
 void doRaid4() {
     char *data;
 	int blockNumber; //starting LBA
@@ -234,8 +228,13 @@ void doRaid4() {
 			int numberOfReads = atoi(commandLine[2]);
 			int currentLBA = atoi(commandLine[1]);
             int j, printedData;
+			int threshold = currentLBA + numberOfReads;
+			if(threshold > size*(disks-1/*excluding parityDisk*/)) 
+			//we need this so we do not write more than the total amount of blocks in all disks
+				threshold = size*(disks-1); //ex if there are only 10 blocks, we can't write >10 times
 			
-			for (j = currentLBA; j < (currentLBA + numberOfReads) /*size*/; j++) { // number of blocks we have to write to
+			
+			for (j = currentLBA; j < threshold; j++) { // number of blocks we have to write to
 				temp = j / strip;
 				stripLayer = temp / (disks-1); //make it seem like we do not have the last disk
 				blockOfStrip = j % strip;
@@ -244,9 +243,10 @@ void doRaid4() {
                 
 				int readCheck = disk_array_read( my_disk_array, diskNumber, blockNumber, data );
 				
-				//if disk_array_read returns -1, we tried to read froma failed disk (from disk-array.h)
+				//if disk_array_read returns -1, we tried to read froma failed disk
+				//if so, we need to try and recover the old info
 				if (readCheck == -1) {
-                    printf("ERROR ");
+					fromParity(j, atoi(commandLine[1]));
                 }
                 else {
                     printedData = atoi(data);
@@ -261,9 +261,12 @@ void doRaid4() {
 			int currentLBA = atoi(commandLine[1]);
             int writeCheck;
             int j;
+			int threshold = currentLBA + numberOfReads;
+			if(threshold > size*(disks-1)) //we need this so we do not write more than the total amount of blocks in all disks
+				threshold = size*(disks-1); //ex if there are only 10 blocks, we can't write >10 times
             
 			
-			for (j = currentLBA; j < (currentLBA + numberOfWrites) /*size*/; j++) { // number of blocks we have to write to
+			for (j = currentLBA; j < threshold; j++) { // number of blocks we have to write to
 				temp = j / strip;
 				stripLayer = temp / (disks-1);
 				blockOfStrip = j % strip;
@@ -278,13 +281,16 @@ void doRaid4() {
 				toParity(parityDisk, blockNumber, diskNumber, atoi(commandLine[3])); //possible? error in last parameter (should be pointer maybe? idk)
                 
 				//write to updating disk
-				disk_array_write( my_disk_array, diskNumber, blockNumber, data);
-                
+				int writeCheck = disk_array_write( my_disk_array, diskNumber, blockNumber, data);
+				
+				//if we detect that we are writing to a failed disk, rewrite 0 and print ERROR
+                if (writeCheck == -1){
+					disk_array_write( my_disk_array, diskNumber, blockNumber, 0);
+					printf("ERROR: writing into failed disk\n");
+					return;
+				}
                 
 			}
-            if (writeCheck == -1) {
-                printf("ERROR ");
-            }
 		}
 		
 		else if (strcmp("FAIL", commandLine[0]) == 0) { //FAIL DISK
