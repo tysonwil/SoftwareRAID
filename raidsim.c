@@ -91,8 +91,6 @@ void doRaid0() {
 			i++;
             command = strtok( NULL, " " );
         }
-
-        
          
         if (strcmp("READ", commandLine[0]) == 0) { //READ LBA SIZE
 			int numberOfReads = atoi(commandLine[2]);
@@ -133,6 +131,7 @@ void doRaid0() {
 			int stripLayer;
 			int blockOfStrip;
 			int temp;
+            int writeCheck;
 			
 			for (j = currentLBA; j < (currentLBA + numberOfWrites) /*size*/; j++) { // number of blocks we have to write to
 				temp = j / strip;
@@ -140,8 +139,12 @@ void doRaid0() {
 				blockOfStrip = j % strip;
 				blockNumber = stripLayer * strip + blockOfStrip;
 				diskNumber = temp % disks; //algorithm to calculate the disk we write to
-				disk_array_write( my_disk_array, diskNumber, blockNumber, data );
+                
+				writeCheck = disk_array_write( my_disk_array, diskNumber, blockNumber, data );
 			}
+            if (writeCheck == -1) {
+                printf("ERROR ");
+            }
 		}
 		
 		else if (strcmp("FAIL", commandLine[0]) == 0) { //FAIL DISK
