@@ -408,7 +408,7 @@ void doRaid10() {
                     }
                 }
                 if (flag1)
-                    printf("%s ", data);
+                    printf("%d ", atoi(data));
             }
         }
         
