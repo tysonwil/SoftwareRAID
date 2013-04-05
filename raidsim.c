@@ -209,12 +209,6 @@ void doRaid4() {
     int numberOfReads;
     data = malloc(1024);
     
-   /*
-    int a = 9;
-    int b = 8;
-    int axorb = a ^ b;
-    printf("THIS IS XOR: %d\n",axorb);
-    */
     
     while (fgets(str, 100, trace_file) != NULL) {
         printf("%s", str);
@@ -275,21 +269,20 @@ void doRaid4() {
                         }
                     }
                     for (i = 0; i < 1024; i++) {
-                        int parity = 0;
+                        char parity = 0;
                         for (k = 0; k < disks; k++) {
-                            if (k == currentLBA)
-                                continue; //do nothing
-                            parity = parity ^ blocks[k][i];
+                            if (k != diskNumber)
+                                parity = parity ^ blocks[k][i];
                         }
-                        blocks[currentLBA][i] = parity;
+                        blocks[diskNumber][i] = parity;
                     }
                     //disk_array_write(my_disk_array, currentLBA, j, blocks[currentLBA]);
                     //if this doesnt work change "block[parityDisk]" into "&block[parityDisk][0]"
                     
-                    printf("Computed parity data: %s ", blocks[currentLBA]);
-                    
+                    printf("Recovered data: %s\n", blocks[diskNumber]);
                     
                 }
+                
                 else {
                     printedData = atoi(data);
                     printf("%d ", printedData);
@@ -344,7 +337,7 @@ void doRaid4() {
                     }
                     blocks[parityDisk][i] = parity;
                 }
-                disk_array_write(my_disk_array, parityDisk, blockNumber, blocks[parityDisk]);
+                disk_array_write(my_disk_array, parityDisk, blockNumber, &blocks[parityDisk][0]);
                 
                //printf("new parity is: %s\n", blocks[parityDisk]);
                 //if this doesnt work change "block[parityDisk]" into "&block[parityDisk][0]"
@@ -373,12 +366,39 @@ void doRaid4() {
         
         else if (strcmp("RECOVER", commandLine[0]) == 0) { //RECOVER DISK
             
-            disk_array_recover_disk( my_disk_array, atoi(commandLine[1])); //we clear the disk
-            working_disks[atoi(commandLine[1])] = TRUE;
+            int recoveredDisk = atoi(commandLine[1]);
+            disk_array_recover_disk( my_disk_array, recoveredDisk); //we clear the disk
+            working_disks[recoveredDisk] = TRUE;
+           
+            /*
             int j;
-            for(j = 0; j < size; j++){ //for every block within a disk
+            for (j = 0; j < size; j++) { //for every block within a disk
                 fromParity(j, atoi(commandLine[1]));
             }
+             */
+            
+            char blocks[disks][1024];
+            int i, k;
+            for (i = 0; i < disks; i++) {
+                if (i != recoveredDisk) { // we don't want to read old datadisk data
+                    disk_array_read(my_disk_array, i, blockNumber, &blocks[i][0]); //if this doesnt work change "block[i]" into "&block[i][0]"
+                }
+            }
+            for (i = 0; i < 1024; i++) {
+                char parity = 0;
+                for (k = 0; k < disks; k++) {
+                    if (k != recoveredDisk)
+                        parity = parity ^ blocks[k][i];
+                }
+                blocks[recoveredDisk][i] = parity;
+            }
+            //disk_array_write(my_disk_array, currentLBA, j, blocks[currentLBA]);
+            //if this doesnt work change "block[parityDisk]" into "&block[parityDisk][0]"
+            
+            disk_array_write(my_disk_array, recoveredDisk, blockNumber, blocks[recoveredDisk]);
+            
+            printf("Recovered data: %s\n", blocks[diskNumber]);
+            
         }
         
         else if (strcmp("END", commandLine[0]) == 0) { // END
