@@ -283,7 +283,8 @@ void doRaid4() {
                     int i, k;
                     for (i = 0; i < disks; i++) {
                         if (i != diskNumber) { // we don't want to read old datadisk data
-                            disk_array_read(my_disk_array, i, blockNumber, &blocks[i][0]); //if this doesnt work change "block[i]" into "&block[i][0]"
+                            disk_array_read(my_disk_array, i, blockNumber, blocks[i]); //if this doesnt work change "block[i]" into "&block[i][0]"
+                            printf("Reading in for parity: %s\n", blocks[i]);
                         }
                     }
                     for (i = 0; i < 1024; i++) {
@@ -297,14 +298,13 @@ void doRaid4() {
                     //disk_array_write(my_disk_array, currentLBA, j, blocks[currentLBA]);
                     //if this doesnt work change "block[parityDisk]" into "&block[parityDisk][0]"
                     
-                    
-                    printf("Recovered data: %s\n", blocks[0]);
+                    printf("Recovered data: %s\n", blocks[diskNumber]);
                     
                 }
                 
                 else {
-                    printedData = atoi(data);
-                    printf("%d ", printedData);
+                    //printedData = atoi(data);
+                    printf("%s ", data);
                 }
             }
         }
@@ -334,16 +334,15 @@ void doRaid4() {
                 
                 char blocks[disks][1024];
                 
-                
                 for (i = 0; i < disks; i++) {
-                    if ((i != parityDisk) && (i != diskNumber)) // we don't want to read either parityDisk or old datadisk
+                    if ((i != parityDisk) && (i != diskNumber)) { // we don't want to read either parityDisk or old datadisk
                         disk_array_read(my_disk_array, i, blockNumber, &blocks[i][0]); //if this doesnt work change "block[i]" into "&block[i][0]"
+                    }
                 }
-                
-                memcpy(&blocks[diskNumber][0], &data, 1024);
+                memcpy(&blocks[diskNumber][0], data, 1024);
                 
                 for (i = 0; i < 1024; i++) {
-                    int parity = 0;
+                    char parity = 0;
                     for (z = 0; z < disks; z++) {
                         if (z == parityDisk)
                             continue; //do nothing
@@ -354,7 +353,7 @@ void doRaid4() {
                 
                 disk_array_write(my_disk_array, parityDisk, blockNumber, &blocks[parityDisk][0]);
         
-                //printf("new parity is: %s\n", blocks[parityDisk]);
+                printf("new parity is: %s\n", blocks[parityDisk]);
                 //if this doesnt work change "block[parityDisk]" into "&block[parityDisk][0]"
                 
                 //write to updating disk
@@ -687,7 +686,6 @@ void chooseSystem(int choice) {
 
 int main(int argc, char * argv[]) {
     
-    
 	//has appropiate amount of arguments?
 	if ((argc != 11) && (argc != 12)) {
 		//debugging
@@ -759,11 +757,6 @@ int main(int argc, char * argv[]) {
 	for(i = 0; i < disks; ++i) {
 		working_disks[i] = TRUE;
     }
-    
-    //  for(i = 0; i < disks; i++){
-    //   disk_array_recover_disk( my_disk_array, i);
-    //  }
-    
     
     chooseSystem(level);
     
