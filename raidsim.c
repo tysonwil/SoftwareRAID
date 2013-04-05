@@ -209,6 +209,12 @@ void doRaid4() {
     int numberOfReads;
     data = malloc(1024);
     
+   /*
+    int a = 9;
+    int b = 8;
+    int axorb = a ^ b;
+    printf("THIS IS XOR: %d\n",axorb);
+    */
     
     while (fgets(str, 100, trace_file) != NULL) {
         printf("%s", str);
@@ -238,9 +244,9 @@ void doRaid4() {
             int currentLBA = atoi(commandLine[1]);
             int j, printedData;
             int threshold = currentLBA + numberOfReads;
-            if(threshold > size*(disks-1/*excluding parityDisk*/))
+            if (threshold > size * (disks-1 /*excluding parityDisk*/ ))
                 //we need this so we do not write more than the total amount of blocks in all disks
-                threshold = size*(disks-1); //ex if there are only 10 blocks, we can't write >10 times
+                threshold = size * (disks-1); //ex if there are only 10 blocks, we can't write >10 times
             
             
             for (j = currentLBA; j < threshold; j++) { // number of blocks we have to write to
@@ -252,10 +258,37 @@ void doRaid4() {
                 
                 int readCheck = disk_array_read( my_disk_array, diskNumber, blockNumber, data );
                 
+                
+                
+                
                 //if disk_array_read returns -1, we tried to read froma failed disk
                 //if so, we need to try and recover the old info
                 if (readCheck == -1) {
-                    fromParity(j, atoi(commandLine[1]));
+                    
+                    //fromParity(j (blockNumber), currentLBA (dataDisk) );
+                    
+                    char blocks[disks][1024];
+                    int i, k;
+                    for (i = 0; i < disks; i++) {
+                        if (i != diskNumber) { // we don't want to read old datadisk data
+                            disk_array_read(my_disk_array, i, blockNumber, &blocks[i][0]); //if this doesnt work change "block[i]" into "&block[i][0]"
+                        }
+                    }
+                    for (i = 0; i < 1024; i++) {
+                        int parity = 0;
+                        for (k = 0; k < disks; k++) {
+                            if (k == currentLBA)
+                                continue; //do nothing
+                            parity = parity ^ blocks[k][i];
+                        }
+                        blocks[currentLBA][i] = parity;
+                    }
+                    //disk_array_write(my_disk_array, currentLBA, j, blocks[currentLBA]);
+                    //if this doesnt work change "block[parityDisk]" into "&block[parityDisk][0]"
+                    
+                    printf("Computed parity data: %s ", blocks[currentLBA]);
+                    
+                    
                 }
                 else {
                     printedData = atoi(data);
@@ -270,8 +303,8 @@ void doRaid4() {
             int currentLBA = atoi(commandLine[1]);
             int j;
             int threshold = currentLBA + numberOfWrites;
-            if (threshold > size*(disks-1)){ //we need this so we do not write more than the total amount of blocks in all disks
-                threshold = size*(disks-1); //ex if there are only 10 blocks, we can't write >10 times
+            if (threshold > size * (disks-1)) { //we need this so we do not write more than the total amount of blocks in all disks
+                threshold = size * (disks-1); //ex if there are only 10 blocks, we can't write >10 times
             }
             
             for (j = currentLBA; j < threshold; j++) { // number of blocks we have to write to
@@ -285,7 +318,39 @@ void doRaid4() {
                 
                 //write to parity disk (last disk)
                 int parityDisk = disks - 1;
-                toParity(parityDisk, blockNumber, diskNumber, commandLine[3]); //possible? error in last parameter (should be pointer maybe? idk)
+                
+                
+                //toParity(parityDisk, blockNumber, diskNumber (datadisk), data); //possible? error in last parameter (should be pointer maybe? idk)
+                
+                
+                // TO PARITY: computing parity to store back in parity disk
+                
+                
+                
+                char blocks[disks][1024];
+                int i, j;
+                for (i = 0; i < disks; i++) {
+                    if ((i != parityDisk) && (i != diskNumber)) // we don't want to read either parityDisk or old datadisk
+                        disk_array_read(my_disk_array, i, blockNumber, &blocks[i][0]); //if this doesnt work change "block[i]" into "&block[i][0]"
+                }
+                memcpy(&blocks[diskNumber][0], &data, 1024);
+                
+                for (i = 0; i < 1024; i++) {
+                    int parity = 0;
+                    for (j = 0; j < disks; j++) {
+                        if (j == parityDisk)
+                            continue; //do nothing
+                        parity = parity ^ blocks[j][i];
+                    }
+                    blocks[parityDisk][i] = parity;
+                }
+                disk_array_write(my_disk_array, parityDisk, blockNumber, blocks[parityDisk]);
+                
+               //printf("new parity is: %s\n", blocks[parityDisk]);
+                //if this doesnt work change "block[parityDisk]" into "&block[parityDisk][0]"
+                
+
+                
                 
                 //write to updating disk
                 int writeCheck = disk_array_write( my_disk_array, diskNumber, blockNumber, data);
