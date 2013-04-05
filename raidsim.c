@@ -339,10 +339,10 @@ void doRaid4() {
                 }
                 disk_array_write(my_disk_array, parityDisk, blockNumber, &blocks[parityDisk][0]);
                 
-               //printf("new parity is: %s\n", blocks[parityDisk]);
+                //printf("new parity is: %s\n", blocks[parityDisk]);
                 //if this doesnt work change "block[parityDisk]" into "&block[parityDisk][0]"
                 
-
+                
                 
                 
                 //write to updating disk
@@ -369,12 +369,12 @@ void doRaid4() {
             int recoveredDisk = atoi(commandLine[1]);
             disk_array_recover_disk( my_disk_array, recoveredDisk); //we clear the disk
             working_disks[recoveredDisk] = TRUE;
-           
+            
             /*
-            int j;
-            for (j = 0; j < size; j++) { //for every block within a disk
-                fromParity(j, atoi(commandLine[1]));
-            }
+             int j;
+             for (j = 0; j < size; j++) { //for every block within a disk
+             fromParity(j, atoi(commandLine[1]));
+             }
              */
             
             char blocks[disks][1024];
@@ -675,23 +675,23 @@ int main(int argc, char * argv[]) {
     
     
 	//set
-	for (counter = 0; counter <= (argc)/2; ++counter) {
-		if (strcmp("-level", argv[2*counter+1]) == 0) {
-			level = atoi(argv[2*counter+2]);
+	for (counter = 0; counter < argc; ++counter) {
+		if (strcmp("-level", argv[counter]) == 0) {
+			level = atoi(argv[counter + 1]);
             
-		} else if (strcmp("-strip", argv[2*counter+1]) == 0) {
-			strip = atoi(argv[2*counter+2]);
+		} else if (strcmp("-strip", argv[counter]) == 0) {
+			strip = atoi(argv[counter + 1]);
             
-		} else if (strcmp("-disks", argv[2*counter+1]) == 0) {
-			disks = atoi(argv[2*counter+2]);
+		} else if (strcmp("-disks", argv[counter]) == 0) {
+			disks = atoi(argv[counter + 1]);
             
-		} else if (strcmp("-size", argv[2*counter+1]) == 0) {
-			size = atoi(argv[2*counter+2]);
+		} else if (strcmp("-size", argv[counter]) == 0) {
+			size = atoi(argv[counter + 1]);
             
-		} else if (strcmp("-trace", argv[2*counter+1]) == 0) {
-			trace = argv[2*counter+2];
+		} else if (strcmp("-trace", argv[counter]) == 0) {
+			trace = argv[counter + 1];
             
-		} else if (strcmp("-verbose", argv[2*counter+1]) == 0) {
+		} else if (strcmp("-verbose", argv[counter]) == 0) {
 			verbose = 1;
 		}
 	}
