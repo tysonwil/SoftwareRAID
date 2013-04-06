@@ -21,4 +21,9 @@
 //
 //////////////////////////// 80 columns wide //////////////////////////////////
 
-For RAID 0 and 10, all tests are passing.  In regards to RAID 4 and 5, all recovered disks displayed accurate readings when possible with the limited tests we exercised. Also, make note that Additive Parity was implemented in both 4 and 5.
+Flow of program: Go through main; jump to choose system (picks one of the 4 doRaid methods); once you
+are within a given doRaid function, the rest of the executable code will run the trace file.
+
+For RAID 0 and 10, all tests are passing.  In regards to RAID 4 and 5, all recovered disks displayed 
+accurate readings when possible with the tests we exercised. Also, make note that Additive Parity was
+implemented in both 4 and 5.  There are no memory leaks nor corruption problems.
