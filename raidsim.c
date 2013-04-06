@@ -210,6 +210,7 @@ void doRaid5() {
     data = malloc(1024);
 	int writeCheck;
     char blocks[disks][1024];
+    int doubleFail = -1;
 	
 	
     
@@ -436,15 +437,20 @@ void doRaid5() {
         else if(strcmp("FAIL", commandLine[0]) == 0) { //FAIL DISK
             disk_array_fail_disk( my_disk_array, atoi(commandLine[1]));
             working_disks[atoi(commandLine[1])] = FALSE;
+            doubleFail++;
             
         }
         
         else if(strcmp("RECOVER", commandLine[0]) == 0) { //RECOVER DISK
             
-            disk_array_recover_disk( my_disk_array, atoi(commandLine[1])); //we clear the disk
-            working_disks[atoi(commandLine[1])] = TRUE;
-            for(j = 0; j < size; j++){ //for every block within a disk
-                //fromParity(j, atoi(commandLine[1]));
+            int recoveredDisk = atoi(commandLine[1]);
+            disk_array_recover_disk( my_disk_array, recoveredDisk); //we clear the disk
+            working_disks[recoveredDisk] = TRUE;
+            
+            
+            int j;
+            for (j = 0; j < size; j++) { //for every block within a disk
+                fromParity(j, atoi(commandLine[1]), my_disk_array);
             }
         }
         
@@ -460,6 +466,8 @@ void doRaid5() {
             exit(-1);
         }
         free(command);
+        
+        doubleFail--;
     }
 }
 
@@ -493,6 +501,7 @@ void doRaid4() {
     int numberOfReads;
     data = malloc(1024);
     int writeCheck;
+    int doubleFail = -1;
     char blocks[disks][1024];
     
     while (fgets(str, 100, trace_file) != NULL) {
@@ -637,6 +646,7 @@ void doRaid4() {
         else if (strcmp("FAIL", commandLine[0]) == 0) { //FAIL DISK
             disk_array_fail_disk( my_disk_array, atoi(commandLine[1]));
             working_disks[atoi(commandLine[1])] = FALSE;
+            doubleFail++;
             
         }
         
@@ -651,30 +661,6 @@ void doRaid4() {
             for (j = 0; j < size; j++) { //for every block within a disk
                 fromParity(j, atoi(commandLine[1]), my_disk_array);
             }
-            /*
-             char blocks[disks][1024];
-             int i, u;
-             for(i = 0; i < disks; i++) {
-             if(i != recoveredDisk){ // we don't want to read old datadisk data
-             disk_array_read(my_disk_array, i, j, blocks[i]); //if this doesnt work change "block[i]" into "&block[i][0]"
-             }
-             }
-             for(i = 0; i < 1024; i++) {
-             int parity = 0;
-             for(u = 0; u < disks; u++) {
-             if(u == recoveredDisk)
-             continue; //do nothing
-             parity = parity ^ blocks[u][i];
-             }
-             blocks[recoveredDisk][i] = parity;
-             }
-             disk_array_write(my_disk_array, recoveredDisk, j, blocks[recoveredDisk]);
-             //if this doesnt work change "block[parityDisk]" into "&block[parityDisk][0]"
-             
-             printf("Recovered data: %s\n", blocks[recoveredDisk]);
-             
-             }
-             */
         }
         
         else if (strcmp("END", commandLine[0]) == 0) { // END
@@ -690,6 +676,8 @@ void doRaid4() {
             exit(-1);
         }
         free(command);
+        
+        doubleFail--;
     }
 }
 
