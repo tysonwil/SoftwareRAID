@@ -236,14 +236,9 @@ void doRaid5() {
             command = strtok( NULL, " " );
         }
         int j;
-        for (j=0; j<i; j++) {
-            printf("%s ",commandLine[j]);
-        }
-        printf("\n");
-        
 		
 		
-        if (strcmp("READ", commandLine[0]) == 0){ //READ LBA SIZE
+        if (strcmp("READ", commandLine[0]) == 0) { //READ LBA SIZE
 			/*
              in: currentLBA
              
@@ -259,20 +254,17 @@ void doRaid5() {
             
             
 			int numberOfReads = atoi(commandLine[2]);
-
+            
 			int j, printedData;
             int threshold = currentLBA + numberOfReads;
             if (threshold > size * (disks -1))
                 //we need this so we do not write more than the total amount of blocks in all disks
                 threshold = size * (disks -1); //ex if there are only 10 blocks, we can't write >10 times
             
-            
-            
+
             
 			for (j = currentLBA; j < threshold; j++) { // number of blocks we have to write to
-                
-				
-                
+                     
                 
 				temp = j / strip;
 				stripLayer = temp / disks; //make it seem like we do not have the parity disk
@@ -297,42 +289,42 @@ void doRaid5() {
 					p++;
 				}
 				
-				if(doNotRead != 1){
+				if (doNotRead != 1) {
 					int readCheck = disk_array_read( my_disk_array, diskNumber, blockNumber, data );
 					
 					//if disk_array_read returns -1, we tried to read froma failed disk
 					//if so, we need to try and recover the old info
-					if (readCheck == -1) {
-						
-						//fromParity(j (blockNumber), currentLBA (dataDisk) );
-						
+                    if (readCheck == -1) {
                         
-						int i, k;
-						for (i = 0; i < disks; i++) {
-							if (i != diskNumber) { // we don't want to read old datadisk data
-								disk_array_read(my_disk_array, i, blockNumber, &blocks[i][0]); //if this doesnt work change "block[i]" into "&block[i][0]"
-							}
-						}
-						for (i = 0; i < 1024; i++) {
-							char parity = 0;
-							for (k = 0; k < disks; k++) {
-								if (k != diskNumber)
-									parity = parity ^ blocks[k][i];
-							}
-							blocks[diskNumber][i] = parity;
-						}
-						//disk_array_write(my_disk_array, currentLBA, j, blocks[currentLBA]);
-						//if this doesnt work change "block[parityDisk]" into "&block[parityDisk][0]"
-						
-						
-						printf("Recovered data: %s\n", blocks[0]);
-						
-					}
-					
-					else {
-						printedData = atoi(data);
-						printf("%d ", printedData);
-					}
+                        //fromParity(j (blockNumber), currentLBA (dataDisk) );
+                        
+                        
+                        int i, k;
+                        for (i = 0; i < disks; i++) {
+                            if (i != diskNumber) { // we don't want to read old datadisk data
+                                disk_array_read(my_disk_array, i, blockNumber, blocks[i]); //if this doesnt work change "block[i]" into "&block[i][0]"
+                                printf("Reading in for parity: %s\n", blocks[i]);
+                            }
+                        }
+                        for (i = 0; i < 1024; i++) {
+                            char parity = 0;
+                            for (k = 0; k < disks; k++) {
+                                if (k != diskNumber)
+                                    parity = parity ^ blocks[k][i];
+                            }
+                            blocks[diskNumber][i] = parity;
+                        }
+                        //disk_array_write(my_disk_array, currentLBA, j, blocks[currentLBA]);
+                        //if this doesnt work change "block[parityDisk]" into "&block[parityDisk][0]"
+                        
+                        printf("Recovered data: %s\n", blocks[diskNumber]);
+                        
+                    }
+                    
+                    else {
+                        //printedData = atoi(data);
+                        printf("%s ", data);
+                    }
 				}
 				doNotRead = 0;
 			}
@@ -356,7 +348,7 @@ void doRaid5() {
             
 			char *data = commandLine[3];
 			int numberOfWrites = atoi(commandLine[2]);
-
+            
             int i, j, z, parityDisk;
             int threshold = currentLBA + numberOfWrites;
             if (threshold > size * (disks-1)) { //we need this so we do not write more than the total amount of blocks in all disks
